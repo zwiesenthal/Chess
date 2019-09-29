@@ -57,6 +57,56 @@ class gamestate
 		return startWhite != endWhite || endEmpty;		
 	}
 
+	bool isValidDiagonal(int startx, int starty, int endx, int endy){
+		bool validDiagonal = true;
+		if(endx-startx > 0 && endy-starty > 0){ //going up and right
+			for(int i = 1; i < endx - startx; ++i){
+				validDiagonal = validDiagonal && board[startx+i][starty+i] == 0;
+			}
+		}
+		else if(endx-startx < 0 && endy-starty > 0){ //going up and left
+			for(int i = 1; i < endy - starty; ++i){
+				validDiagonal = validDiagonal && board[startx-i][starty+i] == 0;
+			}
+		}
+		else if(endx-startx > 0 && endy-starty < 0){ //going down and right
+			for(int i = 1; i < endx - startx; ++i){
+				validDiagonal = validDiagonal && board[startx+i][starty-i] == 0;
+			}
+		}
+		else if(endx-startx < 0 && endy-starty < 0){ //going down and left
+			for(int i = 1; i < startx - endx; ++i){
+				validDiagonal = validDiagonal && board[startx-i][starty-i] == 0;
+			}
+		}
+		return validDiagonal;
+	}
+
+	bool isValidStraight(int startx, int starty, int endx, int endy){
+		bool validStraight = true;
+		if(startx == endx && starty < endy){ //going up
+			for(int i = 1; i < endy - starty; ++i){
+				validStraight = validStraight && board[startx][starty+i] == 0;
+			}
+		}
+		else if(startx == endx && starty > endy) { //going down
+			for(int i = 1; i < starty - endy; ++i){
+				validStraight = validStraight && board[startx][starty-i] == 0;
+			}
+		}
+		else if(starty == endy && startx < endx) { //going right
+			for(int i = 1; i< endx - startx; ++i){
+				validStraight = validStraight && board[startx+i][starty] == 0;
+			}
+		}
+		else if(starty == endy && startx > endx) { //going left
+			for(int i = 1; i< startx - endx; ++i){
+				validStraight = validStraight && board[startx-i][starty] == 0;
+			}
+		}
+		return validStraight;
+	}
+
 	bool isMove(string start, string end){
 		//return if move is possible
 		if(start[0] < 'a' || start[0] > 'h' || start[1] < '1' || start[1] > '8' ||
@@ -114,67 +164,33 @@ class gamestate
 					return false;
 				}
 				else{
-				//need all spots on diagonal to be empty
-					bool validDiagonal = true;
-					if(endx-startx > 0 && endy-starty > 0){
-						for(int i = 1; i < endx - startx; ++i){
-							validDiagonal = validDiagonal && board[startx+i][starty+i] == 0;
-						}
-						//going up and right
-					}
-					else if(endx-startx < 0 && endy-starty > 0){
-						for(int i = 1; i < endy - starty; ++i){
-							validDiagonal = validDiagonal && board[startx-i][starty+i] == 0;
-						}
-						//going up and left
-					}
-					else if(endx-startx > 0 && endy-starty < 0){
-						for(int i = 1; i < endx - startx; ++i){
-							validDiagonal = validDiagonal && board[startx+i][starty-i] == 0;
-						}
-						//going down and right
-					}
-					else if(endx-startx < 0 && endy-starty < 0){
-						for(int i = 1; i < startx - endx; ++i){
-							validDiagonal = validDiagonal && board[startx-i][starty-i] == 0;
-						}
-						//going down and left
-					}
-					return validDiagonal;
+					return isValidDiagonal(startx, starty, endx, endy);
 				}
 
 			case 4: //white rook
 
 			case 14: //black rook
 				//make sure it's on a straight line and end is opposite or empty
-				//then do 4 if statements for up, right, left, down to make sure path is empty
 				if(!((startx == endx) != (starty == endy)) || !isOppositeOrEmpty(startx, starty, endx, endy)){
 					return false;
 				}
 				else {
-					bool validStraight = true;
-					if(startx == endx && starty < endy){ //going up
-						for(int i = 1; i < endy - starty; ++i){
-							validStraight = validStraight && board[startx][starty+i] == 0;
-						}
-					}
-					else if(startx == endx && starty > endy) { //going down
-						for(int i = 1; i < starty - endy; ++i){
-							validStraight = validStraight && board[startx][starty-i] == 0;
-						}
-					}
-					else if(starty == endy && startx < endx) { //going right
-						for(int i = 1; i< endx - startx; ++i){
-							validStraight = validStraight && board[startx+i][starty] == 0;
-						}
-					}
-					else if(starty == endx && startx > endx) { //going left
-						for(int i = 1; i< startx - endx; ++i){
-							validStraight = validStraight && board[startx-i][starty] == 0;
-						}
-					}
-					return validStraight;
+					return isValidStraight(startx, starty, endx, endy);
 				}
+
+			case 5: //white queen
+
+			case 15: //black queen
+				if((abs(endx-startx) == abs(endy-starty) || ((startx == endx) != (starty == endy))) &&
+					isOppositeOrEmpty(startx, starty, endx, endy)) {
+					bool validStraight = isValidStraight(startx, starty, endx, endy);
+					bool validDiagonal = isValidDiagonal(startx, starty, endx, endy);
+					return validStraight && validDiagonal;
+				}
+				else{
+					return false;
+				}
+
 				
 			default:
 				return false;
@@ -256,16 +272,46 @@ class gamestate
 
 int main(){
 	gamestate g;
-	g.board[4][3] = 4;
-	g.board[3][3] = 14;
+	g.board[4][3] = 15;
+	g.board[3][3] = 5;
+	g.board[3][0] = 0;
+	g.board[3][7] = 0;
 	//g.board[4][4] = 1;
 	g.print();
-	//cout<<g.isMove("d4","d7")<<endl;
-	cout<<g.isMove("d4","g4")<<endl;
-	//cout<<g.isMove("d4","d4")<<endl;
-	//cout<<g.isMove("d4","a5")<<endl;
-	
+	cout<<"Works like a rook:\n";
+	cout<<g.isMove("e4","e6")<<endl;
+	cout<<g.isMove("e4","e2")<<endl;
+	cout<<g.isMove("e4","h4")<<endl;
+	cout<<g.isMove("e4","d4")<<endl;
+
+	cout<<"\nWorks like a bishop:\n";
+	cout<<g.isMove("e4","g6")<<endl;
+	cout<<g.isMove("e4","g2")<<endl;
+	cout<<g.isMove("e4","c2")<<endl;
+	cout<<g.isMove("e4","c6")<<endl;
+
+	cout<<"\nFails like a rook:\n";
+	cout<<g.isMove("e4","e8")<<endl;
+	cout<<g.isMove("e4","e2")<<endl;
+	cout<<g.isMove("e4","e4")<<endl;
+	cout<<g.isMove("e4","b4")<<endl;
+
+	cout<<"\nFails like a bishop:\n";
+	cout<<g.isMove("e4","h8")<<endl;
+	cout<<g.isMove("e4","g2")<<endl;
+	cout<<g.isMove("e4","c2")<<endl;
+	cout<<g.isMove("e4","a8")<<endl;
+
 }
+
+
+
+
+
+
+
+
+
 
 
 
