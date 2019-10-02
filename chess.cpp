@@ -13,12 +13,11 @@ class gamestate
 	//1 Wpawn, 2 Wknight, 3 Wbishop, 4 Wrook, 5 Wqueen, 6 Wking -----------WHITE PIECES
 	//11 Bpawn, 12 Bknight, 13 Bbishop, 14 Brook, 15 Bqueen, 16 Bking -----BLACK PIECES
 	
-	//in future make board a private variable but for testing keep it public
 	private:
 	bool whiteTurn = true;
 	int board [8][8];
+	
 	public:
-	//int board [8][8]; 
 	gamestate(){//board[x][y] 
 		board[0][7] = 14; //a8 black pieces below
 		board[1][7] = 12; //b8
@@ -45,8 +44,7 @@ class gamestate
 			for(int col = 0; col<8; ++col){
 				board[col][row] = 0;
 			}
-		}
-				
+		}		
 	}
 
 	void play(){
@@ -79,7 +77,6 @@ class gamestate
 			board[startx][starty] = 0; //empty start position
 			print();
 			return true;
-
 		}
 		else{
 			cout<<"Invalid Move.\n";
@@ -93,7 +90,6 @@ class gamestate
 		bool startWhite = 0 < board[startx][starty] && board[startx][starty] < 7;
 		bool endWhite = 0 < board[endx][endy] && board[endx][endy] < 7;
 		bool endEmpty = board[endx][endy] == 0;
-
 		return startWhite != endWhite || endEmpty;		
 	}
 
@@ -158,7 +154,6 @@ class gamestate
 		int endx = end[0] -'a';
 		int endy = end[1] -'1'; 
 
-		//cout<<startx<<','<<starty<<" --> "<<endx<<','<<endy<<": ";
 		switch(board[startx][starty])
 		{
 			case 0: //empty
@@ -337,7 +332,7 @@ int main(){
 
 
 
-
+//Not used in current model, may be expanded and used in the future for the AI or GUI
 class piece
 {
 	bool white; //black if false, white if true
