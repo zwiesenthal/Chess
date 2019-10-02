@@ -1,3 +1,4 @@
+//Next step need to check for check and check-mate
 #include <iostream>
 #include <string>
 #include <cmath>
@@ -14,9 +15,10 @@ class gamestate
 	
 	//in future make board a private variable but for testing keep it public
 	private:
-	//int board [8][8];
+	bool whiteTurn = true;
+	int board [8][8];
 	public:
-	int board [8][8]; 
+	//int board [8][8]; 
 	gamestate(){//board[x][y] 
 		board[0][7] = 14; //a8 black pieces below
 		board[1][7] = 12; //b8
@@ -45,6 +47,44 @@ class gamestate
 			}
 		}
 				
+	}
+
+	void play(){
+		string start;
+		string end;
+		cout << "Enter move (start) (end): ";
+		cin >> start;
+		cin >> end;
+		makeMove(start,end);
+	}
+
+	bool makeMove(string start, string end){
+		if(isMove(start, end)){
+			int startx = start[0]-'a'; 
+			int starty = start[1]-'1';
+			int endx = end[0] -'a';
+			int endy = end[1] -'1';
+
+			if(!whiteTurn && board[startx][starty] <= 6){
+				cout<<"Invalid Move.\n";
+				return false;
+			}
+			else if(whiteTurn && board[startx][starty] >= 11){
+				cout<<"Invalid Move.\n";
+				return false;
+			}
+
+			whiteTurn = !whiteTurn;
+			board[endx][endy] = board[startx][starty]; //update new postion
+			board[startx][starty] = 0; //empty start position
+			print();
+			return true;
+
+		}
+		else{
+			cout<<"Invalid Move.\n";
+			return false;
+		}
 	}
 	bool isOppositeOrEmpty(int startx, int starty, int endx, int endy){
 		if(board[startx][starty] == 0){
@@ -118,7 +158,7 @@ class gamestate
 		int endx = end[0] -'a';
 		int endy = end[1] -'1'; 
 
-		cout<<startx<<','<<starty<<" --> "<<endx<<','<<endy<<": ";
+		//cout<<startx<<','<<starty<<" --> "<<endx<<','<<endy<<": ";
 		switch(board[startx][starty])
 		{
 			case 0: //empty
@@ -191,7 +231,12 @@ class gamestate
 					return false;
 				}
 
-				
+			case 6: //white king
+
+			case 16: //black king
+				//just check if the end position is 1 spot away and opposite or empty
+				return isOppositeOrEmpty(startx,starty,endx,endy) && 
+					abs(endx - startx) < 2 && abs(endy - starty) < 2;	
 			default:
 				return false;
 
@@ -259,57 +304,31 @@ class gamestate
 					cout << "\033[1;32m"<<piece<<"  \033[0m";
 				}
 			}
-			cout<<row+1<<endl; //swap this line when done, used for testing
+			cout<<"\033[1;36m"<<row+1<<"\033[0m"<<endl; //swap this line when done, used for testing
 			//cout<<row<<endl;
 		}
 		for(char a = 'a'; a<='h'; ++a){
 			cout << "\033[1;35m"<<a<<"  \033[0m";
 		}
-		cout<<endl<<endl;
+		string turnStr;
+		if(whiteTurn){
+			turnStr = "WHITE";
+		}
+		else{
+			turnStr = "BLACK";
+		}
+		cout<<endl<<"Turn: "<<turnStr<<endl;
 	}
 
 };
 
 int main(){
 	gamestate g;
-	g.board[4][3] = 15;
-	g.board[3][3] = 5;
-	g.board[3][0] = 0;
-	g.board[3][7] = 0;
-	//g.board[4][4] = 1;
 	g.print();
-	cout<<"Works like a rook:\n";
-	cout<<g.isMove("e4","e6")<<endl;
-	cout<<g.isMove("e4","e2")<<endl;
-	cout<<g.isMove("e4","h4")<<endl;
-	cout<<g.isMove("e4","d4")<<endl;
-
-	cout<<"\nWorks like a bishop:\n";
-	cout<<g.isMove("e4","g6")<<endl;
-	cout<<g.isMove("e4","g2")<<endl;
-	cout<<g.isMove("e4","c2")<<endl;
-	cout<<g.isMove("e4","c6")<<endl;
-
-	cout<<"\nFails like a rook:\n";
-	cout<<g.isMove("e4","e8")<<endl;
-	cout<<g.isMove("e4","e2")<<endl;
-	cout<<g.isMove("e4","e4")<<endl;
-	cout<<g.isMove("e4","b4")<<endl;
-
-	cout<<"\nFails like a bishop:\n";
-	cout<<g.isMove("e4","h8")<<endl;
-	cout<<g.isMove("e4","g2")<<endl;
-	cout<<g.isMove("e4","c2")<<endl;
-	cout<<g.isMove("e4","a8")<<endl;
-
+	for(int i = 0; i < 30; ++i){
+		g.play();
+	}
 }
-
-
-
-
-
-
-
 
 
 
