@@ -1,5 +1,5 @@
 all:
-	g++ chess.cpp -o chess
+	g++ -std=c++11 chess.cpp -o chess
 	./chess
 
 test:
@@ -9,3 +9,4 @@ test:
 clean:
 	rm chess
 	rm test
+	rm a.out

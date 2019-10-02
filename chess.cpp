@@ -1,3 +1,4 @@
+//Next step need to check for check and check-mate
 #include <iostream>
 #include <string>
 #include <cmath>
@@ -14,9 +15,10 @@ class gamestate
 	
 	//in future make board a private variable but for testing keep it public
 	private:
-	//int board [8][8];
+	bool whiteTurn = true;
+	int board [8][8];
 	public:
-	int board [8][8]; 
+	//int board [8][8]; 
 	gamestate(){//board[x][y] 
 		board[0][7] = 14; //a8 black pieces below
 		board[1][7] = 12; //b8
@@ -46,6 +48,44 @@ class gamestate
 		}
 				
 	}
+
+	void play(){
+		string start;
+		string end;
+		cout << "Enter move (start) (end): ";
+		cin >> start;
+		cin >> end;
+		makeMove(start,end);
+	}
+
+	bool makeMove(string start, string end){
+		if(isMove(start, end)){
+			int startx = start[0]-'a'; 
+			int starty = start[1]-'1';
+			int endx = end[0] -'a';
+			int endy = end[1] -'1';
+
+			if(!whiteTurn && board[startx][starty] <= 6){
+				cout<<"Invalid Move.\n";
+				return false;
+			}
+			else if(whiteTurn && board[startx][starty] >= 11){
+				cout<<"Invalid Move.\n";
+				return false;
+			}
+
+			whiteTurn = !whiteTurn;
+			board[endx][endy] = board[startx][starty]; //update new postion
+			board[startx][starty] = 0; //empty start position
+			print();
+			return true;
+
+		}
+		else{
+			cout<<"Invalid Move.\n";
+			return false;
+		}
+	}
 	bool isOppositeOrEmpty(int startx, int starty, int endx, int endy){
 		if(board[startx][starty] == 0){
 			cerr << "Error: Checking if isOppositeOrEmpty on an empty start position.\n";
@@ -55,6 +95,56 @@ class gamestate
 		bool endEmpty = board[endx][endy] == 0;
 
 		return startWhite != endWhite || endEmpty;		
+	}
+
+	bool isValidDiagonal(int startx, int starty, int endx, int endy){
+		bool validDiagonal = true;
+		if(endx-startx > 0 && endy-starty > 0){ //going up and right
+			for(int i = 1; i < endx - startx; ++i){
+				validDiagonal = validDiagonal && board[startx+i][starty+i] == 0;
+			}
+		}
+		else if(endx-startx < 0 && endy-starty > 0){ //going up and left
+			for(int i = 1; i < endy - starty; ++i){
+				validDiagonal = validDiagonal && board[startx-i][starty+i] == 0;
+			}
+		}
+		else if(endx-startx > 0 && endy-starty < 0){ //going down and right
+			for(int i = 1; i < endx - startx; ++i){
+				validDiagonal = validDiagonal && board[startx+i][starty-i] == 0;
+			}
+		}
+		else if(endx-startx < 0 && endy-starty < 0){ //going down and left
+			for(int i = 1; i < startx - endx; ++i){
+				validDiagonal = validDiagonal && board[startx-i][starty-i] == 0;
+			}
+		}
+		return validDiagonal;
+	}
+
+	bool isValidStraight(int startx, int starty, int endx, int endy){
+		bool validStraight = true;
+		if(startx == endx && starty < endy){ //going up
+			for(int i = 1; i < endy - starty; ++i){
+				validStraight = validStraight && board[startx][starty+i] == 0;
+			}
+		}
+		else if(startx == endx && starty > endy) { //going down
+			for(int i = 1; i < starty - endy; ++i){
+				validStraight = validStraight && board[startx][starty-i] == 0;
+			}
+		}
+		else if(starty == endy && startx < endx) { //going right
+			for(int i = 1; i< endx - startx; ++i){
+				validStraight = validStraight && board[startx+i][starty] == 0;
+			}
+		}
+		else if(starty == endy && startx > endx) { //going left
+			for(int i = 1; i< startx - endx; ++i){
+				validStraight = validStraight && board[startx-i][starty] == 0;
+			}
+		}
+		return validStraight;
 	}
 
 	bool isMove(string start, string end){
@@ -68,7 +158,7 @@ class gamestate
 		int endx = end[0] -'a';
 		int endy = end[1] -'1'; 
 
-		cout<<startx<<','<<starty<<" --> "<<endx<<','<<endy<<": ";
+		//cout<<startx<<','<<starty<<" --> "<<endx<<','<<endy<<": ";
 		switch(board[startx][starty])
 		{
 			case 0: //empty
@@ -114,68 +204,39 @@ class gamestate
 					return false;
 				}
 				else{
-				//need all spots on diagonal to be empty
-					bool validDiagonal = true;
-					if(endx-startx > 0 && endy-starty > 0){
-						for(int i = 1; i < endx - startx; ++i){
-							validDiagonal = validDiagonal && board[startx+i][starty+i] == 0;
-						}
-						//going up and right
-					}
-					else if(endx-startx < 0 && endy-starty > 0){
-						for(int i = 1; i < endy - starty; ++i){
-							validDiagonal = validDiagonal && board[startx-i][starty+i] == 0;
-						}
-						//going up and left
-					}
-					else if(endx-startx > 0 && endy-starty < 0){
-						for(int i = 1; i < endx - startx; ++i){
-							validDiagonal = validDiagonal && board[startx+i][starty-i] == 0;
-						}
-						//going down and right
-					}
-					else if(endx-startx < 0 && endy-starty < 0){
-						for(int i = 1; i < startx - endx; ++i){
-							validDiagonal = validDiagonal && board[startx-i][starty-i] == 0;
-						}
-						//going down and left
-					}
-					return validDiagonal;
+					return isValidDiagonal(startx, starty, endx, endy);
 				}
 
 			case 4: //white rook
 
 			case 14: //black rook
 				//make sure it's on a straight line and end is opposite or empty
-				//then do 4 if statements for up, right, left, down to make sure path is empty
 				if(!((startx == endx) != (starty == endy)) || !isOppositeOrEmpty(startx, starty, endx, endy)){
 					return false;
 				}
 				else {
-					bool validStraight = true;
-					if(startx == endx && starty < endy){ //going up
-						for(int i = 1; i < endy - starty; ++i){
-							validStraight = validStraight && board[startx][starty+i] == 0;
-						}
-					}
-					else if(startx == endx && starty > endy) { //going down
-						for(int i = 1; i < starty - endy; ++i){
-							validStraight = validStraight && board[startx][starty-i] == 0;
-						}
-					}
-					else if(starty == endy && startx < endx) { //going right
-						for(int i = 1; i< endx - startx; ++i){
-							validStraight = validStraight && board[startx+i][starty] == 0;
-						}
-					}
-					else if(starty == endx && startx > endx) { //going left
-						for(int i = 1; i< startx - endx; ++i){
-							validStraight = validStraight && board[startx-i][starty] == 0;
-						}
-					}
-					return validStraight;
+					return isValidStraight(startx, starty, endx, endy);
 				}
-				
+
+			case 5: //white queen
+
+			case 15: //black queen
+				if((abs(endx-startx) == abs(endy-starty) || ((startx == endx) != (starty == endy))) &&
+					isOppositeOrEmpty(startx, starty, endx, endy)) {
+					bool validStraight = isValidStraight(startx, starty, endx, endy);
+					bool validDiagonal = isValidDiagonal(startx, starty, endx, endy);
+					return validStraight && validDiagonal;
+				}
+				else{
+					return false;
+				}
+
+			case 6: //white king
+
+			case 16: //black king
+				//just check if the end position is 1 spot away and opposite or empty
+				return isOppositeOrEmpty(startx,starty,endx,endy) && 
+					abs(endx - startx) < 2 && abs(endy - starty) < 2;	
 			default:
 				return false;
 
@@ -243,29 +304,33 @@ class gamestate
 					cout << "\033[1;32m"<<piece<<"  \033[0m";
 				}
 			}
-			cout<<row+1<<endl; //swap this line when done, used for testing
+			cout<<"\033[1;36m"<<row+1<<"\033[0m"<<endl; //swap this line when done, used for testing
 			//cout<<row<<endl;
 		}
 		for(char a = 'a'; a<='h'; ++a){
 			cout << "\033[1;35m"<<a<<"  \033[0m";
 		}
-		cout<<endl<<endl;
+		string turnStr;
+		if(whiteTurn){
+			turnStr = "WHITE";
+		}
+		else{
+			turnStr = "BLACK";
+		}
+		cout<<endl<<"Turn: "<<turnStr<<endl;
 	}
 
 };
 
 int main(){
 	gamestate g;
-	g.board[4][3] = 4;
-	g.board[3][3] = 14;
-	//g.board[4][4] = 1;
 	g.print();
-	//cout<<g.isMove("d4","d7")<<endl;
-	cout<<g.isMove("d4","g4")<<endl;
-	//cout<<g.isMove("d4","d4")<<endl;
-	//cout<<g.isMove("d4","a5")<<endl;
-	
+	for(int i = 0; i < 30; ++i){
+		g.play();
+	}
 }
+
+
 
 
 
