@@ -1,7 +1,9 @@
 //Next step need to check for check and check-mate
 #include <iostream>
 #include <string>
+#include <unordered_map>
 #include <cmath>
+#include <vector>
 #include <stdio.h>
 #include <stdlib.h>
 using namespace std;
@@ -16,7 +18,9 @@ class gamestate
 	private:
 	bool whiteTurn = true;
 	int board [8][8];
-	
+	unordered_map<int, vector<pair<int,int>>> pieces; //piece number mapped to-
+				//a vector of pairs of coordinates of all of those pieces
+
 	public:
 	gamestate(){//board[x][y] 
 		board[0][7] = 14; //a8 black pieces below
@@ -36,15 +40,36 @@ class gamestate
         board[5][0] = 3; //f1
         board[6][0] = 2; //g1
         board[7][0] = 4; //h1
+
+
+        pieces[4] = {make_pair(0,0), make_pair(0,7)}; //white rooks
+        pieces[14] = {make_pair(7,0), make_pair(7,7)}; //black rooks
+
+        pieces[2] = {make_pair(1,0), make_pair(6,0)}; //white knights
+        pieces[12] = {make_pair(1,7), make_pair(6,7)}; //black knights
+
+        pieces[3] = {make_pair(2,0), make_pair(5,0)}; //white bishops
+        pieces[13] = {make_pair(2,7), make_pair(5,7)}; //black bishops
+
+        pieces[5] = {make_pair(3,0)}; //white queen
+        pieces[15] = {make_pair(3,7)}; //black queen
+
+        pieces[6] = {make_pair(4,0)}; //white king
+        pieces[16] = {make_pair(4,7)}; //black king
+
+				
 		for(int i = 0; i<8; ++i){
 			board[i][6] = 11; //all squares on 7 row are black pawn = 11
 			board[i][1] = 1; //all swares on 2 row are white pawn = 1
+
+			pieces[1].push_back(make_pair(i,1)); //white pawn on line y = 1
+			pieces[11].push_back(make_pair(i,6)); //black pawn on line y = 6
 		}
 		for(int row = 2; row<6; ++row){
 			for(int col = 0; col<8; ++col){
 				board[col][row] = 0;
 			}
-		}		
+		}
 	}
 
 	void play(){
@@ -56,6 +81,42 @@ class gamestate
 		makeMove(start,end);
 	}
 
+	bool kingBlocked(){ //useless right now used later in testCheckmate
+		pair<int, int> kingPos;
+		if(whiteTurn){
+			kingPos = pieces[16][0];
+		}
+		else{
+			kingPos = pieces[6][0];
+		}
+		//8 moves (+1, +1), (+1, -1), (+1, +0) etc
+		vector<pair<int,int>> moves = {make_pair(1,1), make_pair(1,0), 
+			make_pair(1,-1), make_pair(0,1), make_pair(0,-1), 
+			make_pair(-1,1), make_pair(-1,0), make_pair(-1,-1)};
+		pair<int,int> tempPos;
+		for(int i = 0; i<moves.size(); ++i){
+			tempPos.first = kingPos.first + moves[i].first;
+			tempPos.second = kingPos.second + moves[i].second;
+			if(tempPos.first <= 7 && tempPos.first >= 0 && 
+				tempPos.second <= 7 && tempPos.second >= 0 &&
+				board[tempPos.first][tempPos.second] < 11){
+				return false;
+			}  
+		}
+		return true;
+		
+
+	}
+/*
+	bool testCheckmate(int startx, int starty, int endx, int endy){
+		switch(board[startx][starty]){
+			case 1: //white pawn
+				if(board)
+
+			case 11: //black pawn
+		}
+	}
+*/
 	bool makeMove(string start, string end){
 		if(isMove(start, end)){
 			int startx = start[0]-'a'; 
@@ -242,6 +303,7 @@ class gamestate
 	void print(){
 		//King = K, Queen = Q, Knight = N, Bishop = B, Rook = R, Pawn = P, Black = B, White = W
 		string piece= "WP";
+		cout<<endl;
 		for(int row = 7; row >=0; --row){
 			for(int col = 0; col < 8; ++col){
 				//val = board[row][col];

@@ -1,24 +1,23 @@
 //chmod 0777 chess.cpp -> give read and write permissions
 #include <cmath>
 #include <iostream>
+#include <vector>
+#include <unordered_map>
+//#include <pair>
 #include <string>
 using namespace std;
 
 int main(){
 
-	string inp1;
-	string inp2;
-	//string inp;
-	cout << "Enter input: ";
-//	getline(cin, inp);
-	cin >> inp1;
-	cin >> inp2;
-	cout << "This is the input: " << inp1 << ',' << inp2<<endl;
-	//int a = 5;
-	//if( 4 < a < 8 && 3 == 3){
-	//	cout<<"TRUE\n";
-	//}
-	
+	unordered_map<int, vector<pair<int,int>>> pieces;
+	pieces[0] = {make_pair(1,2),make_pair(3,5)};
+	cout<<pieces[0][1].second<<endl;
+	pieces[2].push_back(make_pair(10,2));
+	cout<<pieces[2][0].first<<endl;
+	cout<<pieces[0][0].first<<endl;
+
+
+
 	/*
 	//King Testing
 	gamestate k;
