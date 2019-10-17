@@ -3,8 +3,12 @@ all:
 	./chess
 
 test:
-	g++ test.cpp -o test
+	g++ -std=c++11 test.cpp -o test
 	./test
+
+chm:
+	chmod 0777 chess.cpp
+	chmod 0777 test.cpp
 	
 clean:
 	rm chess
