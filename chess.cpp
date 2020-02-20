@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 using namespace std;
-class gamestate
+class Gamestate
 {
    	//int board [8][8];
 	//board will hold int that says what piece is on the spot
@@ -24,7 +24,7 @@ class gamestate
 	bool whiteTurn = true;
 	int board [8][8];
 
-	gamestate(){//board[x][y] 
+	Gamestate(){//board[x][y] 
 		board[0][7] = 14; //a8 black pieces below
 		board[1][7] = 12; //b8
 		board[2][7] = 13; //c8
@@ -442,12 +442,16 @@ class gamestate
 		cout<<endl<<"Turn: "<<turnStr<<endl;
 	}
 
-	~gamestate(){}
+	Vector<Vector<int>> getAllPossibleMoves(){
+		//output will be vector of [[startx, starty, endx, endy],[startx, starty, endx, endy]]
+	}
+
+	~Gamestate(){}
 
 };
 /*
 int main(){
-	gamestate g;
+	Gamestate g;
 	g.board[5][6] = 0;
 	g.board[0][2] = 3;
 	g.print();
