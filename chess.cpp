@@ -34,28 +34,28 @@ class gamestate
 		board[7][7] = 14; //h8
 
 		board[0][0] = 4; //a1 white pieces below
-    board[1][0] = 2; //b1
-    board[2][0] = 3; //c1
-    board[3][0] = 5; //d1
-    board[4][0] = 6; //e1
-    board[5][0] = 3; //f1
-    board[6][0] = 2; //g1
-    board[7][0] = 4; //h1
+		board[1][0] = 2; //b1
+		board[2][0] = 3; //c1
+		board[3][0] = 5; //d1
+		board[4][0] = 6; //e1
+		board[5][0] = 3; //f1
+		board[6][0] = 2; //g1
+		board[7][0] = 4; //h1
 
-    pieces[4] = {make_pair(0,0), make_pair(0,7)}; //white rooks
-    pieces[14] = {make_pair(7,0), make_pair(7,7)}; //black rooks
+		pieces[4] = {make_pair(0,0), make_pair(0,7)}; //white rooks
+		pieces[14] = {make_pair(7,0), make_pair(7,7)}; //black rooks
 
-    pieces[2] = {make_pair(1,0), make_pair(6,0)}; //white knights
-    pieces[12] = {make_pair(1,7), make_pair(6,7)}; //black knights
+		pieces[2] = {make_pair(1,0), make_pair(6,0)}; //white knights
+		pieces[12] = {make_pair(1,7), make_pair(6,7)}; //black knights
 
-    pieces[3] = {make_pair(2,0), make_pair(5,0)}; //white bishops
-    pieces[13] = {make_pair(2,7), make_pair(5,7)}; //black bishops
+		pieces[3] = {make_pair(2,0), make_pair(5,0)}; //white bishops
+		pieces[13] = {make_pair(2,7), make_pair(5,7)}; //black bishops
 
-    pieces[5] = {make_pair(3,0)}; //white queen
-    pieces[15] = {make_pair(3,7)}; //black queen
+		pieces[5] = {make_pair(3,0)}; //white queen
+		pieces[15] = {make_pair(3,7)}; //black queen
 
-    pieces[6] = {make_pair(4,0)}; //white king
-    pieces[16] = {make_pair(4,7)}; //black king
+		pieces[6] = {make_pair(4,0)}; //white king
+		pieces[16] = {make_pair(4,7)}; //black king
 				
 		for(int i = 0; i<8; ++i){
 			board[i][6] = 11; //all squares on 7 row are black pawn = 11
