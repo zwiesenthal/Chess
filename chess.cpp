@@ -19,10 +19,10 @@ class gamestate
 	bool whiteTurn = true;
 	unordered_map<int, vector<pair<int,int>>> pieces; //piece number mapped to-
 				//a vector of pairs of coordinates of all of those pieces
+
 	public:
 	int board [8][8];
 
-	//int board [8][8]; 
 	gamestate(){//board[x][y] 
 		board[0][7] = 14; //a8 black pieces below
 		board[1][7] = 12; //b8
@@ -34,30 +34,28 @@ class gamestate
 		board[7][7] = 14; //h8
 
 		board[0][0] = 4; //a1 white pieces below
-        board[1][0] = 2; //b1
-        board[2][0] = 3; //c1
-        board[3][0] = 5; //d1
-        board[4][0] = 6; //e1
-        board[5][0] = 3; //f1
-        board[6][0] = 2; //g1
-        board[7][0] = 4; //h1
+    board[1][0] = 2; //b1
+    board[2][0] = 3; //c1
+    board[3][0] = 5; //d1
+    board[4][0] = 6; //e1
+    board[5][0] = 3; //f1
+    board[6][0] = 2; //g1
+    board[7][0] = 4; //h1
 
+    pieces[4] = {make_pair(0,0), make_pair(0,7)}; //white rooks
+    pieces[14] = {make_pair(7,0), make_pair(7,7)}; //black rooks
 
-        pieces[4] = {make_pair(0,0), make_pair(0,7)}; //white rooks
-        pieces[14] = {make_pair(7,0), make_pair(7,7)}; //black rooks
+    pieces[2] = {make_pair(1,0), make_pair(6,0)}; //white knights
+    pieces[12] = {make_pair(1,7), make_pair(6,7)}; //black knights
 
-        pieces[2] = {make_pair(1,0), make_pair(6,0)}; //white knights
-        pieces[12] = {make_pair(1,7), make_pair(6,7)}; //black knights
+    pieces[3] = {make_pair(2,0), make_pair(5,0)}; //white bishops
+    pieces[13] = {make_pair(2,7), make_pair(5,7)}; //black bishops
 
-        pieces[3] = {make_pair(2,0), make_pair(5,0)}; //white bishops
-        pieces[13] = {make_pair(2,7), make_pair(5,7)}; //black bishops
+    pieces[5] = {make_pair(3,0)}; //white queen
+    pieces[15] = {make_pair(3,7)}; //black queen
 
-        pieces[5] = {make_pair(3,0)}; //white queen
-        pieces[15] = {make_pair(3,7)}; //black queen
-
-        pieces[6] = {make_pair(4,0)}; //white king
-        pieces[16] = {make_pair(4,7)}; //black king
-
+    pieces[6] = {make_pair(4,0)}; //white king
+    pieces[16] = {make_pair(4,7)}; //black king
 				
 		for(int i = 0; i<8; ++i){
 			board[i][6] = 11; //all squares on 7 row are black pawn = 11
@@ -66,13 +64,12 @@ class gamestate
 			pieces[1].push_back(make_pair(i,1)); //white pawn on line y = 1
 			pieces[11].push_back(make_pair(i,6)); //black pawn on line y = 6
 		}
+    
 		for(int row = 2; row<6; ++row){
 			for(int col = 0; col<8; ++col){
 				board[col][row] = 0;
 			}
 		}
-
-
 	}
 
 	void play(){
@@ -107,9 +104,8 @@ class gamestate
 			}  
 		}
 		return true;
-		
-
 	}
+  
 	bool isCheck(int startx, int starty, int endx, int endy){
 		pair<int,int> currKing;
 		if(whiteTurn){
@@ -152,7 +148,6 @@ class gamestate
 
 			default:
 				return false;
-
 		}
 	}
 
@@ -193,7 +188,6 @@ class gamestate
 			board[startx][starty] = 0; //empty start position
 			print();
 			return true;
-
 		}
 		else{
 			cout<<"Invalid Move.\n";
@@ -207,11 +201,8 @@ class gamestate
 		bool startWhite = 0 < board[startx][starty] && board[startx][starty] < 7;
 		bool endWhite = 0 < board[endx][endy] && board[endx][endy] < 7;
 		bool endEmpty = board[endx][endy] == 0;
-
 		return startWhite != endWhite || endEmpty;		
 	}
-
-
 
 	bool isValidDiagonal(int startx, int starty, int endx, int endy){
 		if(abs(endx-startx) != abs(endy-starty)){
@@ -280,7 +271,6 @@ class gamestate
 		int endx = end[0] -'a';
 		int endy = end[1] -'1'; 
 
-		//cout<<startx<<','<<starty<<" --> "<<endx<<','<<endy<<": ";
 		switch(board[startx][starty])
 		{
 			case 0: //empty
@@ -465,7 +455,7 @@ int main(){
 
 
 
-
+//Not used in current model, may be expanded and used in the future for the AI or GUI
 class piece
 {
 	bool white; //black if false, white if true
