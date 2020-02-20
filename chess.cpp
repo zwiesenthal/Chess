@@ -147,11 +147,7 @@ class gamestate
 
 			case 15: //black queen
 				return isValidDiagonal(endx, endy, currKing.first, currKing.second) || isValidStraight(endx, endy, currKing.first, currKing.second);
-
-			case 6: //white king
-
-			case 16: //black king
-
+				
 			default:
 				return false;
 		}
@@ -280,6 +276,9 @@ class gamestate
 		int endx = end[0] -'a';
 		int endy = end[1] -'1'; 
 
+		if(!isOppositeOrEmpty(startx, starty, endx, endy)){
+			return false;
+		}
 		switch(board[startx][starty])
 		{
 			case 0: //empty
@@ -320,44 +319,24 @@ class gamestate
 			case 3: //white bishop
 
 			case 13: //black bishop
-				//check the diagonal that it is trying to reach isOppositeOrEmpty, also make sure it's a diagonal
-				if(abs(endx-startx) != abs(endy-starty) || !isOppositeOrEmpty(startx, starty, endx, endy)) { //make sure move is on a diagonal
-					return false;
-				}
-				else{
-					return isValidDiagonal(startx, starty, endx, endy);
-				}
+				return isValidDiagonal(startx, starty, endx, endy);
 
 			case 4: //white rook
 
 			case 14: //black rook
-				//make sure it's on a straight line and end is opposite or empty
-				if(!((startx == endx) != (starty == endy)) || !isOppositeOrEmpty(startx, starty, endx, endy)){
-					return false;
-				}
-				else {
-					return isValidStraight(startx, starty, endx, endy);
-				}
+				return isValidStraight(startx, starty, endx, endy);
 
 			case 5: //white queen
 
 			case 15: //black queen
-				if((abs(endx-startx) == abs(endy-starty) || ((startx == endx) != (starty == endy))) &&
-					isOppositeOrEmpty(startx, starty, endx, endy)) {
-					bool validStraight = isValidStraight(startx, starty, endx, endy);
-					bool validDiagonal = isValidDiagonal(startx, starty, endx, endy);
-					return validStraight || validDiagonal;
-				}
-				else{
-					return false;
-				}
+				return isValidDiagonal(startx, starty, endx, endy) ||
+					isValidStraight(startx, starty, endx, endy);
 
 			case 6: //white king
 
 			case 16: //black king
 				//just check if the end position is 1 spot away and opposite or empty
-				return isOppositeOrEmpty(startx,starty,endx,endy) && 
-					abs(endx - startx) < 2 && abs(endy - starty) < 2;	
+				return abs(endx - startx) < 2 && abs(endy - starty) < 2;	
 			default:
 				return false;
 

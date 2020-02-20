@@ -86,11 +86,11 @@ int main(){
 	cout<<pieces[2][0].first<<endl;
 	cout<<pieces[0][0].first<<endl;
 */
-	//testCheck();
-	gamestate game;
-	game.play();
+	testCheck();
+	//gamestate game;
+	//game.play();
 
-	/*
+	
 	//King Testing
 	gamestate k;
 	k.board[5][6] = 6;
@@ -159,6 +159,6 @@ int main(){
 	cout<<g.isMove("e4","g2")<<endl;
 	cout<<g.isMove("e4","c2")<<endl;
 	cout<<g.isMove("e4","a8")<<endl;
-	*/
+	
 
 }
