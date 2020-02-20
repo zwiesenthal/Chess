@@ -16,11 +16,12 @@ class gamestate
 	//11 Bpawn, 12 Bknight, 13 Bbishop, 14 Brook, 15 Bqueen, 16 Bking -----BLACK PIECES
 	
 	private:
-	bool whiteTurn = true;
+	//bool whiteTurn = true;
 	unordered_map<int, vector<pair<int,int>>> pieces; //piece number mapped to-
 				//a vector of pairs of coordinates of all of those pieces
 
 	public:
+	bool whiteTurn = true;
 	int board [8][8];
 
 	gamestate(){//board[x][y] 
@@ -73,12 +74,15 @@ class gamestate
 	}
 
 	void play(){
+		print();
 		string start;
 		string end;
-		cout << "Enter move (start) (end): ";
-		cin >> start;
-		cin >> end;
-		makeMove(start,end);
+		while(true){
+			cout << "Enter move (start) (end): ";
+			cin >> start;
+			cin >> end;
+			makeMove(start,end);
+		}
 	}
 
 	bool kingBlocked(){ //useless right now used later in testCheckmate
@@ -114,6 +118,8 @@ class gamestate
 		else{
 			currKing = pieces[6][0]; 
 		}
+		//printf("In isCheck: start: (%d,%d), end: (%d,%d), currKing: (%d,%d).\n",
+	//		startx,starty,endx,endy,currKing.first,currKing.second);
 		switch(board[startx][starty])
 		{
 			case 1: //white pawn
@@ -183,6 +189,9 @@ class gamestate
 				return false;
 			}
 
+			if(isCheck(startx, starty, endx, endy)){
+				cout<<"Check\n";
+			}
 			whiteTurn = !whiteTurn;
 			board[endx][endy] = board[startx][starty]; //update new postion
 			board[startx][starty] = 0; //empty start position

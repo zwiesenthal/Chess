@@ -31,9 +31,11 @@ bool testCheck(){
 	cout<<(g.isCheck(6,5,5,6) == 1)<<endl;
 
 	g.board[6][2] = 13;
-	cout<<(g.isMove("g3","e1") == 0)<<endl;
-	cout<<(g.isCheck(6,2,7,3) == 0)<<endl;
-	cout<<(g.isCheck(6,2,4,0) == 1)<<endl;
+	//g.print();
+	g.whiteTurn=0;
+	//cout<<(g.isMove("g3","e1") == 0)<<endl;
+	//cout<<(g.isCheck(6,2,7,3) == 0)<<endl;
+	cout<<(g.isCheck(6,2,5,1) == 1)<<endl;
 	
 	gamestate c;
 	cout<< "-----Rooks-----\n";
@@ -84,8 +86,9 @@ int main(){
 	cout<<pieces[2][0].first<<endl;
 	cout<<pieces[0][0].first<<endl;
 */
-	testCheck();
-
+	//testCheck();
+	gamestate game;
+	game.play();
 
 	/*
 	//King Testing
