@@ -444,6 +444,10 @@ class Gamestate
 		cout<<endl<<"Turn: "<<turnStr<<endl;
 	}
 
+	bool onBoard(int endx, int endy){
+		return endx <=7 && endx >=0 && endy <=7 && endy >=0;
+	}
+
 	vector<vector<int>> getOnePieceMoves(int startx, int starty){
 		vector<vector<int>> outputMoves;
 		switch(board[startx][starty]){
@@ -451,19 +455,20 @@ class Gamestate
 				for(int i = -1; i<2; ++i){
 					if(startx+i >= 0 && startx+i <=7 && starty+1 <=7){
 						if((i == -1 || i == 1) && board[startx+i][starty+1] > 10){
-							outputMoves.push_back({startx, starty, startx + i, starty + 1});
+							//outputMoves.push_back({startx, starty, startx + i, starty + 1});
 						}
 						else if(i == 0){
 							if(board[startx][starty+1] == 0){
-								outputMoves.push_back({startx, starty, startx + i, starty + 1});
+								//outputMoves.push_back({startx, starty, startx + i, starty + 1});
 							}
 							if(starty == 1 && board[startx][starty+2] == 0 && board[startx][starty+1] == 0){
-								outputMoves.push_back({startx, starty, startx +i, starty + 2});
+								//outputMoves.push_back({startx, starty, startx +i, starty + 2});
 							}
 						}
 					}
 				}
 				break;
+
 			case 11:
 				for(int i = -1; i<2; ++i){
 					if(startx+i >= 0 && startx+i <=7 && starty-1 >=0){
@@ -481,6 +486,59 @@ class Gamestate
 					}
 				}
 				break;
+
+			case 2:
+
+			case 12:
+				{
+					int knightJumps[4] = {1,-1,2,-2};
+					for(int & i : knightJumps){
+						for(int & j : knightJumps){
+							if(abs(i) != abs(j) && onBoard(startx + i, starty +j) &&
+								isOppositeOrEmpty(startx, starty, startx + i, starty + j)){
+								//outputMoves.push_back({startx, starty, startx + i, starty + j});
+							}
+						}
+					}
+					break;
+				}
+
+			case 3:
+
+			case 13:
+				//cout<<"HI"<<endl;
+				for(int i = 1; onBoard(startx + i, starty + i) && isOppositeOrEmpty(startx, starty, startx + i, starty + i); ++i){
+					outputMoves.push_back({startx, starty, startx + i, starty + i});
+					if(whiteTurn && board[startx + i][starty + i] > 10  ||
+					 !whiteTurn && board[startx + i][starty + i] < 7 && board[startx + i][starty + i] > 0){
+						break;
+					}
+				}
+				for(int i = 1; onBoard(startx + i, starty - i) && isOppositeOrEmpty(startx, starty, startx + i, starty - i); ++i){
+					outputMoves.push_back({startx, starty, startx + i, starty - i});
+					if(whiteTurn && board[startx + i][starty - i] > 10  ||
+					 !whiteTurn && board[startx + i][starty - i] < 7 && board[startx + i][starty - i] > 0){
+						break;
+					}
+				}
+				for(int i = 1; onBoard(startx - i, starty + i) && isOppositeOrEmpty(startx, starty, startx - i, starty + i); ++i){
+					outputMoves.push_back({startx, starty, startx - i, starty + i});
+					if(whiteTurn && board[startx - i][starty + i] > 10  ||
+					 !whiteTurn && board[startx - i][starty + i] < 7 && board[startx - i][starty + i] > 0){
+						break;
+					}
+				}
+				for(int i = 1; onBoard(startx - i, starty - i) && isOppositeOrEmpty(startx, starty, startx - i, starty - i); ++i){
+					outputMoves.push_back({startx, starty, startx - i, starty - i});
+					if(whiteTurn && board[startx - i][starty - i] > 10  ||
+					 !whiteTurn && board[startx - i][starty - i] < 7 && board[startx - i][starty - i] > 0){
+						break;
+					}
+				}
+				break;
+
+					
+				
 
 			default:
 				break;
@@ -514,8 +572,13 @@ class Gamestate
 
 int main(){
 	Gamestate g;
-	g.whiteTurn = false;
+	//g.whiteTurn = false;
 	g.board[1][5] = 3;
+	g.board[5][5] = 14;
+	g.board[3][1] = 0;
+	g.board[4][2] = 12;
+	g.board[1][1] = 0;
+
 	g.print();
 	vector<vector<int>> moves = g.getAllPossibleMoves();
 	for(int i = 0; i<moves.size(); ++i){
