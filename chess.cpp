@@ -377,7 +377,7 @@ class Gamestate
 				switch(board[col][row])
 				{
 					case 0:
-						piece = "*";
+						piece = "-";
 						break;
 					case 1:
 						piece = "wP";
@@ -425,7 +425,7 @@ class Gamestate
 				}	
 				else{
 					//cout<<piece<<"  ";
-					cout << "\033[1;32m"<<piece<<"  \033[0m";
+					cout << "\033[1;33m"<<piece<<"  \033[0m";
 				}
 			}
 			cout<<"\033[1;36m"<<row+1<<"\033[0m"<<endl; //swap this line when done, used for testing
@@ -571,23 +571,9 @@ class Gamestate
 };
 
 int main(){
+	cout<<"\u2654"<<endl;	
 	Gamestate g;
-	//g.whiteTurn = false;
-	g.board[1][5] = 3;
-	g.board[5][5] = 14;
-	g.board[3][1] = 0;
-	g.board[4][2] = 12;
-	g.board[1][1] = 0;
-
-	g.print();
-	vector<vector<int>> moves = g.getAllPossibleMoves();
-	for(int i = 0; i<moves.size(); ++i){
-		for(int j = 0; j<moves[i].size(); ++j){
-			cout<< moves[i][j] <<' ';
-		}
-		cout<<endl;
-	}
-	return 0;
+	g.play();
 }
 
 
