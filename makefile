@@ -13,4 +13,3 @@ chm:
 clean:
 	rm chess
 	rm test
-	rm a.out

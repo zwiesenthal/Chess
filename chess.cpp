@@ -1,4 +1,4 @@
-//Next step need to check for check and check-mate
+//Next step need to check for check-mate, and update pieces from makeMove
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -6,8 +6,10 @@
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
+#include <iterator>
+#include <algorithm>
 using namespace std;
-class gamestate
+class Gamestate
 {
    	//int board [8][8];
 	//board will hold int that says what piece is on the spot
@@ -24,7 +26,7 @@ class gamestate
 	bool whiteTurn = true;
 	int board [8][8];
 
-	gamestate(){//board[x][y] 
+	Gamestate(){//board[x][y] 
 		board[0][7] = 14; //a8 black pieces below
 		board[1][7] = 12; //b8
 		board[2][7] = 13; //c8
@@ -43,14 +45,14 @@ class gamestate
 		board[6][0] = 2; //g1
 		board[7][0] = 4; //h1
 
-		pieces[4] = {make_pair(0,0), make_pair(0,7)}; //white rooks
-		pieces[14] = {make_pair(7,0), make_pair(7,7)}; //black rooks
-
 		pieces[2] = {make_pair(1,0), make_pair(6,0)}; //white knights
 		pieces[12] = {make_pair(1,7), make_pair(6,7)}; //black knights
 
 		pieces[3] = {make_pair(2,0), make_pair(5,0)}; //white bishops
 		pieces[13] = {make_pair(2,7), make_pair(5,7)}; //black bishops
+
+		pieces[4] = {make_pair(0,0), make_pair(0,7)}; //white rooks
+		pieces[14] = {make_pair(7,0), make_pair(7,7)}; //black rooks
 
 		pieces[5] = {make_pair(3,0)}; //white queen
 		pieces[15] = {make_pair(3,7)}; //black queen
@@ -77,9 +79,13 @@ class gamestate
 		print();
 		string start;
 		string end;
-		while(true){
+		while(true){ //eventually check for checkmate
 			cout << "Enter move (start) (end): ";
 			cin >> start;
+			if(start == "quit" || start == "q" || start == "exit"){
+                cout << "Game over.\n";
+                break;
+            }	
 			cin >> end;
 			makeMove(start,end);
 		}
@@ -169,7 +175,7 @@ class gamestate
 		}*/
 	}
 
-	bool makeMove(string start, string end){
+	bool makeMove(string start, string end){ //todo: update pieces
 		if(isMove(start, end)){
 			int startx = start[0]-'a'; 
 			int starty = start[1]-'1';
@@ -354,7 +360,7 @@ class gamestate
 				switch(board[col][row])
 				{
 					case 0:
-						piece = "*";
+						piece = "-";
 						break;
 					case 1:
 						piece = "wP";
@@ -402,7 +408,7 @@ class gamestate
 				}	
 				else{
 					//cout<<piece<<"  ";
-					cout << "\033[1;32m"<<piece<<"  \033[0m";
+					cout << "\033[1;33m"<<piece<<"  \033[0m";
 				}
 			}
 			cout<<"\033[1;36m"<<row+1<<"\033[0m"<<endl; //swap this line when done, used for testing
@@ -421,22 +427,136 @@ class gamestate
 		cout<<endl<<"Turn: "<<turnStr<<endl;
 	}
 
-	~gamestate(){}
+	bool onBoard(int endx, int endy){
+		return endx <=7 && endx >=0 && endy <=7 && endy >=0;
+	}
+
+	vector<vector<int>> getOnePieceMoves(int startx, int starty){
+		vector<vector<int>> outputMoves;
+		switch(board[startx][starty]){
+			case 1:
+				for(int i = -1; i<2; ++i){
+					if(startx+i >= 0 && startx+i <=7 && starty+1 <=7){
+						if((i == -1 || i == 1) && board[startx+i][starty+1] > 10){
+							//outputMoves.push_back({startx, starty, startx + i, starty + 1});
+						}
+						else if(i == 0){
+							if(board[startx][starty+1] == 0){
+								//outputMoves.push_back({startx, starty, startx + i, starty + 1});
+							}
+							if(starty == 1 && board[startx][starty+2] == 0 && board[startx][starty+1] == 0){
+								//outputMoves.push_back({startx, starty, startx +i, starty + 2});
+							}
+						}
+					}
+				}
+				break;
+
+			case 11:
+				for(int i = -1; i<2; ++i){
+					if(startx+i >= 0 && startx+i <=7 && starty-1 >=0){
+						if((i == -1 || i == 1) && board[startx+i][starty-1] < 7 && board[startx+i][starty-1] > 0){
+							outputMoves.push_back({startx, starty, startx + i, starty - 1});
+						}
+						else if(i == 0){
+							if(board[startx][starty-1] == 0){
+								outputMoves.push_back({startx, starty, startx + i, starty - 1});
+							}
+							if(starty == 6 && board[startx][starty-2] == 0 && board[startx][starty-1] == 0){
+								outputMoves.push_back({startx, starty, startx +i, starty - 2});
+							}
+						}
+					}
+				}
+				break;
+
+			case 2:
+
+			case 12:
+				{
+					int knightJumps[4] = {1,-1,2,-2};
+					for(int & i : knightJumps){
+						for(int & j : knightJumps){
+							if(abs(i) != abs(j) && onBoard(startx + i, starty +j) &&
+								isOppositeOrEmpty(startx, starty, startx + i, starty + j)){
+								//outputMoves.push_back({startx, starty, startx + i, starty + j});
+							}
+						}
+					}
+					break;
+				}
+
+			case 3:
+
+			case 13:
+				for(int i = 1; onBoard(startx + i, starty + i) && isOppositeOrEmpty(startx, starty, startx + i, starty + i); ++i){
+					outputMoves.push_back({startx, starty, startx + i, starty + i});
+					if(whiteTurn && board[startx + i][starty + i] > 10  ||
+					 !whiteTurn && board[startx + i][starty + i] < 7 && board[startx + i][starty + i] > 0){
+						break;
+					}
+				}
+				for(int i = 1; onBoard(startx + i, starty - i) && isOppositeOrEmpty(startx, starty, startx + i, starty - i); ++i){
+					outputMoves.push_back({startx, starty, startx + i, starty - i});
+					if(whiteTurn && board[startx + i][starty - i] > 10  ||
+					 !whiteTurn && board[startx + i][starty - i] < 7 && board[startx + i][starty - i] > 0){
+						break;
+					}
+				}
+				for(int i = 1; onBoard(startx - i, starty + i) && isOppositeOrEmpty(startx, starty, startx - i, starty + i); ++i){
+					outputMoves.push_back({startx, starty, startx - i, starty + i});
+					if(whiteTurn && board[startx - i][starty + i] > 10  ||
+					 !whiteTurn && board[startx - i][starty + i] < 7 && board[startx - i][starty + i] > 0){
+						break;
+					}
+				}
+				for(int i = 1; onBoard(startx - i, starty - i) && isOppositeOrEmpty(startx, starty, startx - i, starty - i); ++i){
+					outputMoves.push_back({startx, starty, startx - i, starty - i});
+					if(whiteTurn && board[startx - i][starty - i] > 10  ||
+					 !whiteTurn && board[startx - i][starty - i] < 7 && board[startx - i][starty - i] > 0){
+						break;
+					}
+				}
+				break;
+
+					
+				
+
+			default:
+				break;
+		}
+		return outputMoves;
+	}
+
+	vector<vector<int>> getAllPossibleMoves(){
+		//output will be vector of [[startx, starty, endx, endy],[startx, starty, endx, endy]]
+		vector<vector<int>> allMoves;
+
+		unordered_map<int, vector<pair<int,int>>>::iterator it = pieces.begin();
+		while(it != pieces.end()){
+			if(whiteTurn && it->first <=6 || !whiteTurn && it->first >=11){
+				//cout<<endl<<endl<<it->first<<endl;
+				for(int i = 0; i < it->second.size();++i){
+					//cout<<it->second[i].first << ','<<it->second[i].second<<'\t';
+					vector<vector<int>> onePieceMoves = getOnePieceMoves(it->second[i].first, it->second[i].second);
+					allMoves.insert(allMoves.end(),onePieceMoves.begin(), onePieceMoves.end());
+				}
+			}
+			it++;
+		}
+
+		return allMoves;
+	}
+
+	~Gamestate(){}
 
 };
-/*
-int main(){
-	gamestate g;
-	g.board[5][6] = 0;
-	g.board[0][2] = 3;
-	g.print();
-	//cout<< g.isMove(0,2,4,7) << " : valid diagonal"<< endl;
-	cout<< g.isMove("a3", "e8")<< " : is move\n";
-	cout << g.isCheck(2,0,0,2) << endl;
-	cout << g.isCheck(1,1,1,2) << endl;
 
+int main(){
+	Gamestate g;
+	g.play();
 }
-*/
+
 
 
 
