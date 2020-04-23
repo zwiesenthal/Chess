@@ -79,9 +79,13 @@ class Gamestate
 		print();
 		string start;
 		string end;
-		while(true){
+		while(true){ //eventually check for checkmate
 			cout << "Enter move (start) (end): ";
 			cin >> start;
+			if(start == "quit" || start == "q" || start == "exit"){
+                cout << "Game over.\n";
+                break;
+            }	
 			cin >> end;
 			makeMove(start,end);
 		}
@@ -571,7 +575,6 @@ class Gamestate
 };
 
 int main(){
-	cout<<"\u2654"<<endl;	
 	Gamestate g;
 	g.play();
 }
